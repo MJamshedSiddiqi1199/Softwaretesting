@@ -13,6 +13,7 @@ public class LoginApp extends JFrame {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/softwaretesting";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "12345678";
+
     public LoginApp() {
         setTitle("Login Screen");
         setSize(350, 200);
@@ -40,27 +41,46 @@ public class LoginApp extends JFrame {
         add(panel);
     }
 
+
+
+
     private class LoginAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String email = emailField.getText();
-            String password = new String(passwordField.getPassword()); // Password is ignored for validation
+            String email = emailField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
 
-            String userName = authenticateUser(email);
+            // Check for empty input fields
+            if (email.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        "Please fill in both email and password.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return; // Stop further processing
+            }
+
+            String userName = authenticateUser(email, password);
             if (userName != null) {
-                JOptionPane.showMessageDialog(null, "Welcome, " + userName + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "Welcome, " + userName + "!",
+                        "Login Successful",
+                        JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "User not found.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "Invalid email or password.",
+                        "Login Failed",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    private String authenticateUser(String email) {
+    private String authenticateUser(String email, String password) {
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "SELECT name FROM User WHERE Email = ?";
+            String query = "SELECT Name FROM User WHERE Email = ? AND Password = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, email);
+            stmt.setString(2, password); // Validate password
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -71,13 +91,8 @@ public class LoginApp extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("This is a test print statement.");
-
-
-
         return userName;
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
