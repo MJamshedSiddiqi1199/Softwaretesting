@@ -44,6 +44,7 @@ public class LoginApp extends JFrame {
 
 
 
+
     private class LoginAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -59,7 +60,7 @@ public class LoginApp extends JFrame {
                 return; // Stop further processing
             }
 
-            String userName = authenticateUser(email, password);
+            String userName = authenticateUser(email);
             if (userName != null) {
                 JOptionPane.showMessageDialog(null,
                         "Welcome, " + userName + "!",
@@ -74,13 +75,18 @@ public class LoginApp extends JFrame {
         }
     }
 
-    private String authenticateUser(String email, String password) {
+    public String authenticateUser(String email) {
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             String query = "SELECT Name FROM User WHERE Email = ? AND Password = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, email);
-            stmt.setString(2, password); // Validate password
+
+
+
+
+
+
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
