@@ -71,8 +71,13 @@ public class LoginApp extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("This is a test print statement.");
+
+
+
         return userName;
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
